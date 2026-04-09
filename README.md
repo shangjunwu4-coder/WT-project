@@ -82,14 +82,11 @@ SecondHandMarket 的整体设计重点包括：
 
 成员名单：吴尚骏、史朝鲁、朱晨希
 
-当前分工
 吴尚骏负责前端页面基础搭建、样式和交互部分，具体包括：assets/css/style.css、index.php、products.php 的前端部分、assets/javascript/main.js。
-
 主要任务说明：负责网站整体前端页面布局、负责页面样式设计与统一、负责首页与商品页前端展示效果、负责基础交互脚本编写、负责提升页面整体视觉效果和用户体验。
 
 史朝鲁
 负责数据库与后端核心逻辑部分，具体包括：、数据库设计、后端功能实现、CRUD 核心逻辑。
-
 主要任务说明：负责数据库结构设计与数据表规划、负责数据库连接与数据管理、负责用户注册、登录等后端数据处理、负责商品信息的增删改查核心功能、负责项目主要业务逻辑实现。
 
 朱晨希
@@ -108,7 +105,6 @@ id、user_id、category_id、title、description、price、product_image、produ
 id、user_id、product_id、created_at
 
 
-运行环境
 项目开发与运行环境如下：
 Windows、XAMPP、Apache、MySQL、phpMyAdmin、VSCode
 
@@ -118,12 +114,10 @@ Windows、XAMPP、Apache、MySQL、phpMyAdmin、VSCode
 使用 phpMyAdmin 创建数据库
 导入项目所需数据表
 在浏览器中访问项目页面，例如：
-http://localhost/index.php
-http://localhost/login.php
-http://localhost/register.php
+http://localhost/index.php、http://localhost/login.php、http://localhost/register.php
 
 
-项目意义
+项目意义：
 通过 SecondHandMarket 项目的开发，团队成员可以系统练习并掌握：基础 Web 项目开发流程，PHP 与 MySQL 的协同使用，前后端分工合作方式，注册 / 登录系统实现，CRUD 功能设计与开发，页面美化与用户体验优化，项目文档撰写与规范整理。
 
 该项目不仅是一次课程实践，也为后续开发更完整的动态网站项目积累经验。
