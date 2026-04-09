@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,61 +120,71 @@
 <section class="container">
     <h2 class="section-title">Favorite Products</h2>
 
-    <div class="product-grid">
-        <div class="product-card">
-            <img src="https://via.placeholder.com/300x220" alt="Favorite Product 1" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">Wireless Mouse</h3>
-                <p class="product-price">$9.00</p>
-                <p class="product-meta">Category: Electronics</p>
-                <div class="product-actions">
-                    <a href="product_detail.php" class="btn">View</a>
-                    <button class="btn btn-secondary">Remove</button>
-                </div>
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        <div class="empty-box">
+            <h3>Please login first</h3>
+            <p>Login to view and manage your favorite products.</p>
+            <div class="empty-box-actions">
+                <a href="login.php" class="btn">Login</a>
+                <a href="register.php" class="btn btn-secondary">Register</a>
             </div>
         </div>
+    <?php else: ?>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x220" alt="Favorite Product 1" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Wireless Mouse</h3>
+                    <p class="product-price">$9.00</p>
+                    <p class="product-meta">Category: Electronics</p>
+                    <div class="product-actions">
+                        <a href="product_detail.php" class="btn">View</a>
+                        <button class="btn btn-secondary">Remove</button>
+                    </div>
+                </div>
+            </div>
 
-        <div class="product-card">
-            <img src="https://via.placeholder.com/300x220" alt="Favorite Product 2" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">Data Structures Book</h3>
-                <p class="product-price">$11.00</p>
-                <p class="product-meta">Category: Books</p>
-                <div class="product-actions">
-                    <a href="product_detail.php" class="btn">View</a>
-                    <button class="btn btn-secondary">Remove</button>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x220" alt="Favorite Product 2" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Data Structures Book</h3>
+                    <p class="product-price">$11.00</p>
+                    <p class="product-meta">Category: Books</p>
+                    <div class="product-actions">
+                        <a href="product_detail.php" class="btn">View</a>
+                        <button class="btn btn-secondary">Remove</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="product-card">
-            <img src="https://via.placeholder.com/300x220" alt="Favorite Product 3" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">Portable Fan</h3>
-                <p class="product-price">$7.00</p>
-                <p class="product-meta">Category: Daily Items</p>
-                <div class="product-actions">
-                    <a href="product_detail.php" class="btn">View</a>
-                    <button class="btn btn-secondary">Remove</button>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x220" alt="Favorite Product 3" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Portable Fan</h3>
+                    <p class="product-price">$7.00</p>
+                    <p class="product-meta">Category: Daily Items</p>
+                    <div class="product-actions">
+                        <a href="product_detail.php" class="btn">View</a>
+                        <button class="btn btn-secondary">Remove</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="product-card">
-            <img src="https://via.placeholder.com/300x220" alt="Favorite Product 4" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">Campus Backpack</h3>
-                <p class="product-price">$20.00</p>
-                <p class="product-meta">Category: Daily Items</p>
-                <div class="product-actions">
-                    <a href="product_detail.php" class="btn">View</a>
-                    <button class="btn btn-secondary">Remove</button>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x220" alt="Favorite Product 4" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">Campus Backpack</h3>
+                    <p class="product-price">$20.00</p>
+                    <p class="product-meta">Category: Daily Items</p>
+                    <div class="product-actions">
+                        <a href="product_detail.php" class="btn">View</a>
+                        <button class="btn btn-secondary">Remove</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
