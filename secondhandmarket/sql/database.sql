@@ -8,6 +8,7 @@ CREATE TABLE users
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -59,5 +60,5 @@ INSERT INTO categories (name) VALUES
 ('Daily Use');
 
 
-INSERT INTO users (username, email, password)
-VALUES ('testuser', 'test@example.com', '123456');
+INSERT INTO users (username, email, password, gender)
+VALUES ('testuser', 'test@example.com', '123456' ,'Male');
