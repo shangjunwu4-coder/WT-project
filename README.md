@@ -69,7 +69,7 @@ SecondHandMarket/
 成员名单：吴尚骏、史朝鲁、朱晨希
 
 当前分工
-1、吴尚骏
+吴尚骏
 负责前端页面基础搭建、样式和交互部分，具体包括：
 assets/css/style.css
 index.php
@@ -83,7 +83,7 @@ assets/javascript/main.js
 负责基础交互脚本编写
 负责提升页面整体视觉效果和用户体验
 
-2、史朝鲁
+史朝鲁
 负责数据库与后端核心逻辑部分，具体包括：
 数据库设计
 后端功能实现
@@ -96,7 +96,7 @@ CRUD 核心逻辑
 负责商品信息的增删改查核心功能
 负责项目主要业务逻辑实现
 
-3、朱晨希
+朱晨希
 注册页面与登录页面搭建
 基础前端验证
 登录 / 注册后端基础逻辑
@@ -104,50 +104,25 @@ README 初稿编写相关任务
 
 
 项目后续数据库预计至少包含以下核心数据表：
+
 1、users
 用于存储用户信息，例如：
-id
-username
-email
-password
-phone
-created_at
-categories
+id、username、email、password、phone、created_at、categories
 
 2、用于存储商品分类，例如：
-id
-category_name
-products
+id、category_name、products
 
 3、用于存储商品信息，例如：
-id
-user_id
-category_id
-title
-description
-price
-product_image
-product_status
-created_at
-updated_at
-favorites
+id、user_id、category_id、title、description、price、product_image、product_status、created_at、updated_at、favorites
 
 4、用于存储用户收藏关系，例如：
-id
-user_id
-product_id
-created_at
+id、user_id、product_id、created_at
 
 
 运行环境
 项目开发与运行环境如下：
-Windows
-XAMPP
-Apache
-MySQL
-phpMyAdmin
-VSCode
-项目运行方法
+Windows、XAMPP、Apache、MySQL、phpMyAdmin、VSCode
+项目运行方法：
 打开 XAMPP，启动 Apache 和 MySQL
 将项目文件放入 htdocs 目录
 使用 phpMyAdmin 创建数据库
@@ -160,13 +135,7 @@ http://localhost/register.php
 
 项目意义
 通过 SecondHandMarket 项目的开发，团队成员可以系统练习并掌握：
-基础 Web 项目开发流程
-PHP 与 MySQL 的协同使用
-前后端分工合作方式
-注册 / 登录系统实现
-CRUD 功能设计与开发
-页面美化与用户体验优化
-项目文档撰写与规范整理
+基础 Web 项目开发流程，PHP 与 MySQL 的协同使用，前后端分工合作方式，注册 / 登录系统实现，CRUD 功能设计与开发，页面美化与用户体验优化，项目文档撰写与规范整理。
 
 该项目不仅是一次课程实践，也为后续开发更完整的动态网站项目积累经验。
 
