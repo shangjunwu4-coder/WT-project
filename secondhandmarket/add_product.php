@@ -5,12 +5,14 @@ include 'includes/dbconnect.php';
 $message = "";
 $message_type = "";
 
-
+// 判断是否登录
 if (!isset($_SESSION['user_id'])) {
     die("Please login first before adding a product.");
 }
 
+$user_id = $_SESSION['user_id'];
 
+// 获取分类
 try {
     $stmt = $pdo->query("SELECT * FROM categories ORDER BY name ASC");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -18,21 +20,20 @@ try {
     die("Failed to load categories: " . $e->getMessage());
 }
 
+// 初始化表单数据
 $title = "";
 $price = "";
 $category_id = "";
 $description = "";
-$image = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $price = trim($_POST['price'] ?? '');
     $category_id = trim($_POST['category_id'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $image = trim($_POST['image'] ?? '');
     $user_id = $_SESSION['user_id'];
 
-    
+    // 基础校验
     if ($title === "" || $price === "" || $description === "" || $category_id === "") {
         $message = "Please fill in all required fields.";
         $message_type = "error";
@@ -40,36 +41,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Price must be a valid non-negative number.";
         $message_type = "error";
     } else {
-        try {
-           
-            $sql = "INSERT INTO products 
-                    (user_id, category_id, title, description, price, image, status, created_at)
-                    VALUES 
-                    (:user_id, :category_id, :title, :description, :price, :image, 'active', NOW())";
+        // 默认图片
+        $image_path = 'assets/images/default-product.png';
 
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':user_id' => $user_id,
-                ':category_id' => $category_id,
-                ':title' => $title,
-                ':description' => $description,
-                ':price' => $price,
-                ':image' => $image !== "" ? $image : 'assets/images/default-product.png'
-            ]);
+        // 处理图片上传
+        if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $file = $_FILES['product_image'];
 
-            $message = "Product added successfully!";
-            $message_type = "success";
+            if ($file['error'] === 0) {
+                $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $file_type = mime_content_type($file['tmp_name']);
+                $max_size = 5 * 1024 * 1024; // 5MB
 
-            // 清空表单
-            $title = "";
-            $price = "";
-            $category_id = "";
-            $description = "";
-            $image = "";
+                if (!in_array($file_type, $allowed_types)) {
+                    $message = "Only JPG, PNG, GIF, and WEBP images are allowed.";
+                    $message_type = "error";
+                } elseif ($file['size'] > $max_size) {
+                    $message = "Image size cannot exceed 5MB.";
+                    $message_type = "error";
+                } else {
+                    $upload_dir = 'uploads/products/';
 
-        } catch (PDOException $e) {
-            $message = "Database error: " . $e->getMessage();
-            $message_type = "error";
+                    // 如果文件夹不存在就自动创建
+                    if (!is_dir($upload_dir)) {
+                        mkdir($upload_dir, 0777, true);
+                    }
+
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $new_filename = 'product_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
+                    $target_path = $upload_dir . $new_filename;
+
+                    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+                        $image_path = $target_path;
+                    } else {
+                        $message = "Failed to upload image.";
+                        $message_type = "error";
+                    }
+                }
+            } else {
+                $message = "Image upload error.";
+                $message_type = "error";
+            }
+        }
+
+        // 如果前面没有报错，再插入数据库
+        if ($message_type !== "error") {
+            try {
+                $sql = "INSERT INTO products 
+                        (user_id, category_id, title, description, price, image, status, created_at)
+                        VALUES 
+                        (:user_id, :category_id, :title, :description, :price, :image, 'active', NOW())";
+
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':user_id' => $user_id,
+                    ':category_id' => $category_id,
+                    ':title' => $title,
+                    ':description' => $description,
+                    ':price' => $price,
+                    ':image' => $image_path
+                ]);
+
+                // 发布成功后跳转到我的商品页
+                header("Location: my_products.php?msg=added");
+                exit;
+
+            } catch (PDOException $e) {
+                $message = "Database error: " . $e->getMessage();
+                $message_type = "error";
+            }
         }
     }
 }
@@ -115,6 +155,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 8px;
             font-size: 15px;
             box-sizing: border-box;
+        }
+
+        .upload-box {
+            border: 2px dashed #2e7d32;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: #f8fff8;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-box.dragover {
+            background: #e8f5e9;
+            border-color: #1b5e20;
+        }
+
+        .upload-box p {
+            margin: 0;
+            color: #555;
+        }
+
+        .preview-image {
+            margin-top: 15px;
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: 10px;
+            display: none;
         }
 
         .btn-submit {
@@ -173,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Product Title *</label>
             <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" required>
@@ -198,8 +266,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="form-group">
-            <label for="image">Image URL</label>
-            <input type="text" id="image" name="image" value="<?php echo htmlspecialchars($image); ?>" placeholder="e.g. assets/images/book1.jpg">
+            <label>Product Image</label>
+
+            <div class="upload-box" id="uploadBox">
+                <p>Drag image here or click to choose a file</p>
+                <input type="file" id="product_image" name="product_image" accept="image/*" hidden>
+                <img id="previewImage" class="preview-image" alt="Preview">
+            </div>
         </div>
 
         <div class="form-group">
@@ -210,6 +283,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn-submit">Add Product</button>
     </form>
 </div>
+
+<script>
+    const uploadBox = document.getElementById('uploadBox');
+    const fileInput = document.getElementById('product_image');
+    const previewImage = document.getElementById('previewImage');
+
+    uploadBox.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        showPreview(this.files[0]);
+    });
+
+    uploadBox.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', function () {
+        uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            showPreview(files[0]);
+        }
+    });
+
+    function showPreview(file) {
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
 
 </body>
 </html>
