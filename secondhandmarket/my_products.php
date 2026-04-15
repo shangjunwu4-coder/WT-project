@@ -1,49 +1,47 @@
 <?php
 session_start();
-if(!isset($_SESSION['user_id'])) { header("Location: login.php"); exit; }
 include 'includes/dbconnect.php';
 
-$stmt = $pdo->prepare("SELECT p.*, c.name AS category_name
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
+$stmt = $pdo->prepare("
+    SELECT p.*, c.name AS category_name
     FROM products p
     JOIN categories c ON p.category_id = c.id
-    WHERE p.user_id = :uid");
-$stmt->execute(['uid'=>$_SESSION['user_id']]);
-$my_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    WHERE p.user_id = :user_id
+    ORDER BY p.created_at DESC
+");
+$stmt->execute(['user_id' => $user_id]);
+$myProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Products</title>
-<link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMart - My Products</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-<nav class="navbar">
-    <a href="index.php" class="logo">CampusMart</a>
-    <a href="logout.php">Logout</a>
-</nav>
 
-<h1>My Products</h1>
-<div class="product-grid">
-<?php foreach($my_products as $p): ?>
-<div class="product-card">
-    <img src="<?php echo htmlspecialchars($p['image']); ?>" alt="<?php echo htmlspecialchars($p['title']); ?>">
-    <div class="product-info">
-        <h3><?php echo htmlspecialchars($p['title']); ?></h3>
-        <p class="price">$<?php echo $p['price']; ?></p>
-        <p>Category: <?php echo htmlspecialchars($p['category_name']); ?></p>
-        <div class="actions">
-            <a href="edit_product.php?id=<?php echo $p['id']; ?>" class="btn">Edit</a>
-            <a href="delete_product.php?id=<?php echo $p['id']; ?>" class="btn btn-secondary">Delete</a>
+<nav class="navbar">
+    <div class="container navbar-content">
+        <a href="index.php" class="logo">CampusMart</a>
+        <div class="nav-links">
+            <a href="index.php">Home</a>
+            <a href="products.php">Products</a>
+            <a href="add_product.php">Sell Item</a>
+            <a href="cart.php">Cart</a>
+            <a href="my_products.php">My Products</a>
+            <a href="logout.php">Logout</a>
         </div>
     </div>
-</div>
-<?php endforeach; ?>
-</div>
-
-</body>
-</html>
+</nav>
 
 <section class="hero small-hero">
     <div class="container">
@@ -55,22 +53,31 @@ $my_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <section class="container">
     <h2 class="section-title">Your Listed Products</h2>
 
-    <div class="product-grid">
-        <?php foreach ($myProducts as $product): ?>
-            <div class="product-card">
-                <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['title']; ?>" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-title"><?php echo $product['title']; ?></h3>
-                    <p class="product-price">$<?php echo $product['price']; ?></p>
-                    <p class="product-meta">Category: <?php echo $product['category']; ?></p>
-                    <div class="product-actions">
-                        <a href="edit_product.php" class="btn">Edit</a>
-                        <button class="btn btn-danger">Delete</button>
+    <?php if (count($myProducts) > 0): ?>
+        <div class="product-grid">
+            <?php foreach ($myProducts as $product): ?>
+                <div class="product-card">
+                    <img 
+                        src="<?php echo htmlspecialchars(!empty($product['image']) ? $product['image'] : 'assets/images/default-product.png'); ?>" 
+                        alt="<?php echo htmlspecialchars($product['title']); ?>" 
+                        class="product-image"
+                    >
+                    <div class="product-info">
+                        <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
+                        <p class="product-price">$<?php echo htmlspecialchars($product['price']); ?></p>
+                        <p class="product-meta">Category: <?php echo htmlspecialchars($product['category_name']); ?></p>
+
+                        <div class="product-actions">
+                            <a href="edit_product.php?id=<?php echo $product['id']; ?>" class="btn">Edit</a>
+                            <a href="delete_product.php?id=<?php echo $product['id']; ?>" class="btn btn-secondary">Delete</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <p>You have not posted any products yet.</p>
+    <?php endif; ?>
 </section>
 
 <footer class="footer">
