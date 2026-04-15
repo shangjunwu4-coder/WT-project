@@ -151,17 +151,4 @@ product_detail.php 里的后端读取部分
 my_products.php 里的后端读取部分
 读取当前用户发布的商品
 
-朱晨希负责文件
-register.php
-注册页面表单
-用户输入验证
-提交注册
-错误提示显示
-login.php
-登录页面表单
-登录验证
-session 创建
-logout.php
-session 销毁
-跳转回首页/登录页
-README.md
+
