@@ -30,6 +30,7 @@ CREATE TABLE products
     price DECIMAL(10,2) NOT NULL,
     image VARCHAR(255) DEFAULT NULL,
     status VARCHAR(20) DEFAULT 'active',
+    views INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -54,10 +55,22 @@ CREATE TABLE favorites
 
 INSERT INTO categories (name) VALUES
 ('Books'),
+('Textbooks'),
 ('Electronics'),
+('Phones & Tablets'),
+('Laptops'),
 ('Clothes'),
+('Shoes'),
 ('Furniture'),
-('Daily Use');
+('Daily Use'),
+('Dorm Supplies'),
+('Kitchenware'),
+('Bicycles'),
+('Sports Equipment'),
+('Beauty & Personal Care'),
+('Study Supplies'),
+('Tickets & Coupons'),
+('Other');
 
 
 INSERT INTO users (username, email, password, gender)
