@@ -2,14 +2,70 @@
 session_start();
 include 'includes/dbconnect.php'; // 确保 $pdo 已经在这里初始化
 
+try {
+    $stmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Failed to load categories: " . $e->getMessage());
+}
+
+$search = trim($_GET['q'] ?? '');
+$selectedCategoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
+$selectedPriceRange = trim($_GET['price_range'] ?? '');
+$selectedCategoryName = '';
+$priceRanges = [
+    'under_50' => ['label' => 'Under $50', 'min' => null, 'max' => 50],
+    '50_100' => ['label' => '$50 - $100', 'min' => 50, 'max' => 100],
+    '100_300' => ['label' => '$100 - $300', 'min' => 100, 'max' => 300],
+    '300_500' => ['label' => '$300 - $500', 'min' => 300, 'max' => 500],
+    '500_plus' => ['label' => '$500+', 'min' => 500, 'max' => null],
+];
+$activePriceRange = $priceRanges[$selectedPriceRange] ?? null;
+
+foreach ($categories as $category) {
+    if ((int)$category['id'] === $selectedCategoryId) {
+        $selectedCategoryName = $category['name'];
+        break;
+    }
+}
+
 // 查询数据库，关联分类和用户
 $sql = "SELECT products.*, categories.name AS category_name, users.username
         FROM products
         JOIN categories ON products.category_id = categories.id
         JOIN users ON products.user_id = users.id
-        WHERE products.status = 'active'
-        ORDER BY products.created_at DESC";
-$stmt = $pdo->query($sql);
+        WHERE products.status = 'active'";
+$params = [];
+
+if ($search !== '') {
+    $sql .= " AND (
+        products.title LIKE :keyword
+        OR products.description LIKE :keyword
+        OR users.username LIKE :keyword
+    )";
+    $params[':keyword'] = '%' . $search . '%';
+}
+
+if ($selectedCategoryId > 0) {
+    $sql .= " AND products.category_id = :category_id";
+    $params[':category_id'] = $selectedCategoryId;
+}
+
+if ($activePriceRange !== null) {
+    if ($activePriceRange['min'] !== null) {
+        $sql .= " AND products.price >= :min_price";
+        $params[':min_price'] = $activePriceRange['min'];
+    }
+
+    if ($activePriceRange['max'] !== null) {
+        $sql .= " AND products.price < :max_price";
+        $params[':max_price'] = $activePriceRange['max'];
+    }
+}
+
+$sql .= " ORDER BY products.created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -53,24 +109,51 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- Search / Filter -->
 <section class="container">
-    <div class="filter-bar">
-        <input type="text" placeholder="Search products...">
-        <select>
-            <option>All Categories</option>
-            <option>Books</option>
-            <option>Electronics</option>
-            <option>Clothes</option>
-            <option>Daily Items</option>
-            <option>Sports</option>
-            <option>Others</option>
+    <form class="filter-bar" method="GET" action="products.php">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search by product name, description, or seller..."
+            value="<?php echo htmlspecialchars($search); ?>"
+        >
+        <select name="category_id">
+            <option value="0">All Categories</option>
+            <?php foreach ($categories as $category): ?>
+                <option value="<?php echo $category['id']; ?>" <?php echo $selectedCategoryId === (int)$category['id'] ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($category['name']); ?>
+                </option>
+            <?php endforeach; ?>
         </select>
-        <button class="btn">Search</button>
-    </div>
+        <select name="price_range">
+            <option value="">All Prices</option>
+            <?php foreach ($priceRanges as $rangeKey => $range): ?>
+                <option value="<?php echo $rangeKey; ?>" <?php echo $selectedPriceRange === $rangeKey ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($range['label']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit" class="btn">Search</button>
+        <?php if ($search !== '' || $selectedCategoryId > 0 || $activePriceRange !== null): ?>
+            <a href="products.php" class="btn btn-secondary">Clear</a>
+        <?php endif; ?>
+    </form>
 </section>
 
 <!-- Products List -->
 <section class="container">
     <h2 class="section-title">All Products</h2>
+    <p class="filter-summary">
+        <?php echo count($products); ?> product(s) found
+        <?php if ($selectedCategoryName !== ''): ?>
+            in <?php echo htmlspecialchars($selectedCategoryName); ?>
+        <?php endif; ?>
+        <?php if ($search !== ''): ?>
+            for "<?php echo htmlspecialchars($search); ?>"
+        <?php endif; ?>
+        <?php if ($activePriceRange !== null): ?>
+            in <?php echo htmlspecialchars($activePriceRange['label']); ?>
+        <?php endif; ?>
+    </p>
 
     <?php if (count($products) > 0): ?>
         <div class="product-grid">
@@ -92,7 +175,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <p>No products found.</p>
+        <p>No products found for the selected search conditions.</p>
     <?php endif; ?>
 </section>
 
