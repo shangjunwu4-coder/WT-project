@@ -20,18 +20,51 @@ if ($product_id <= 0) {
 }
 
 try {
-    
-    $stmt = $pdo->prepare("UPDATE products 
-                           SET status = 'deleted' 
-                           WHERE id = :id AND user_id = :user_id");
+    $stmt = $pdo->prepare("
+        SELECT image
+        FROM products
+        WHERE id = :id AND user_id = :user_id
+        LIMIT 1
+    ");
+    $stmt->execute([
+        ':id' => $product_id,
+        ':user_id' => $user_id
+    ]);
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$product) {
+        die("Product not found or you do not have permission to delete it.");
+    }
+
+    $pdo->beginTransaction();
+
+    $stmt = $pdo->prepare("
+        DELETE FROM products
+        WHERE id = :id AND user_id = :user_id
+    ");
     $stmt->execute([
         ':id' => $product_id,
         ':user_id' => $user_id
     ]);
 
+    $pdo->commit();
+
+    $imagePath = $product['image'] ?? '';
+    $defaultImage = 'assets/images/default-product.png';
+
+    if ($imagePath !== '' && $imagePath !== $defaultImage) {
+        $fullImagePath = __DIR__ . '/' . ltrim($imagePath, '/');
+        if (is_file($fullImagePath)) {
+            unlink($fullImagePath);
+        }
+    }
+
     header("Location: my_products.php?msg=deleted");
     exit;
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     die("Database error: " . $e->getMessage());
 }
 ?>
