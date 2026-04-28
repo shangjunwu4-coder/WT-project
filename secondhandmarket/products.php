@@ -87,7 +87,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="index.php">Home</a>
             <a href="products.php">Products</a>
             <a href="add_product.php">Sell Item</a>
-            <a href="cart.php">Cart</a>
+            <a href="cart.php">Favorites</a>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="my_products.php">My Products</a>
                 <a href="logout.php">Logout</a>
@@ -159,7 +159,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="product-grid">
             <?php foreach ($products as $product): ?>
                 <div class="product-card">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>" class="product-image">
+                    <img
+                        src="<?php echo htmlspecialchars(!empty($product['image']) ? $product['image'] : 'assets/images/default-product.png'); ?>"
+                        alt="<?php echo htmlspecialchars($product['title']); ?>"
+                        class="product-image"
+                    >
                     <div class="product-info">
                         <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
                         <p class="product-price">$<?php echo htmlspecialchars($product['price']); ?></p>
@@ -168,7 +172,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
                         <div class="product-actions">
                             <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="btn">View</a>
-                            <button class="btn btn-secondary">Add to Cart</button>
+                            <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="btn btn-secondary">Save Item</a>
                         </div>
                     </div>
                 </div>
@@ -182,7 +186,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
-        <p>© 2026 CampusMart. Built for Web Technologies Assignment.</p>
+        <p>&copy; 2026 CampusMart. Built for Web Technologies Assignment.</p>
     </div>
 </footer>
 
