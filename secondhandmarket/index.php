@@ -93,7 +93,7 @@ if (isset($_SESSION['user_id'])) {
             <a href="index.php" class="nav-current">Home</a>
             <a href="products.php">Products</a>
             <a href="add_product.php">Sell Item</a>
-            <a href="cart.php">Cart</a>
+            <a href="cart.php">Favorites</a>
             <?php if(isset($_SESSION['user_id'])): ?>
                 <a href="my_products.php">My Products</a>
                 <a href="logout.php">Logout</a>
@@ -263,7 +263,7 @@ if (isset($_SESSION['user_id'])) {
             <p class="section-subtitle">A simple place to revisit items you are interested in.</p>
         </div>
         <?php if (isset($_SESSION['user_id'])): ?>
-            <a href="my_products.php" class="section-link">Manage my account</a>
+            <a href="cart.php" class="section-link">View all favorites</a>
         <?php endif; ?>
     </div>
 
@@ -321,7 +321,7 @@ if (isset($_SESSION['user_id'])) {
 
 <footer class="footer">
     <div class="container">
-        <p>© 2026 CampusMart. Built for Web Technologies Assignment.</p>
+        <p>&copy; 2026 CampusMart. Built for Web Technologies Assignment.</p>
     </div>
 </footer>
 
