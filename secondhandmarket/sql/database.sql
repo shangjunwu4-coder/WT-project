@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS secondhandmarket CHARACTER SET utf8mb4 COLLATE utf
 USE secondhandmarket;
 
 
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -13,14 +13,14 @@ CREATE TABLE users
 );
 
 
-CREATE TABLE categories
+CREATE TABLE IF NOT EXISTS categories
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
 
-CREATE TABLE products 
+CREATE TABLE IF NOT EXISTS products 
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE products
 );
 
 
-CREATE TABLE favorites 
+CREATE TABLE IF NOT EXISTS favorites 
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE favorites
 );
 
 
-INSERT INTO categories (name) VALUES
+INSERT IGNORE INTO categories (name) VALUES
 ('Books'),
 ('Textbooks'),
 ('Electronics'),
@@ -73,5 +73,5 @@ INSERT INTO categories (name) VALUES
 ('Other');
 
 
-INSERT INTO users (username, email, password, gender)
-VALUES ('testuser', 'test@example.com', '123456' ,'Male');
+INSERT IGNORE INTO users (username, email, password, gender)
+VALUES ('testuser', 'test@example.com', '$2y$10$2xVkcXCn.qAN5QJLrBSGQuypVebiPYWcnuXLmC6pqBrB6znwBBnWq' ,'Male');
