@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="index.php">Home</a>
             <a href="products.php">Products</a>
             <a href="add_product.php">Sell Item</a>
-            <a href="cart.php">Cart</a>
+            <a href="cart.php">Favorites</a>
             <a href="login.php">Login</a>
             <a href="register.php">Register</a>
         </div>
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <footer class="footer">
     <div class="container">
-        <p>© 2026 CampusMart. Built for Web Technologies Assignment.</p>
+        <p>&copy; 2026 CampusMart. Built for Web Technologies Assignment.</p>
     </div>
 </footer>
 
