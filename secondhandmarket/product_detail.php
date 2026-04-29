@@ -29,6 +29,10 @@ if (!$product) {
 
 // 图片兜底
 $product_image = !empty($product['image']) ? $product['image'] : 'https://via.placeholder.com/600x420';
+$postedTimestamp = !empty($product['created_at']) ? strtotime($product['created_at']) : false;
+$postedDate = $postedTimestamp ? date('M d, Y', $postedTimestamp) : 'Recently';
+$sellerName = $product['username'] ?? 'Campus seller';
+$categoryName = $product['category_name'] ?? 'Campus item';
 
 $isFavorited = false;
 if (isset($_SESSION['user_id'])) {
@@ -61,7 +65,7 @@ if (isset($_SESSION['user_id'])) {
             <a href="index.php" class="logo">CampusMart</a>
             <div class="nav-links">
                 <a href="index.php">Home</a>
-                <a href="products.php">Products</a>
+                <a href="products.php" class="nav-current">Products</a>
                 <a href="add_product.php">Sell Item</a>
                 <a href="cart.php">Favorites</a>
 
@@ -85,22 +89,51 @@ if (isset($_SESSION['user_id'])) {
     </section>
 
     <!-- Product Detail -->
-    <section class="container">
+    <section class="container product-detail-section">
         <div class="product-detail">
             <div class="product-detail-image">
+                <span class="detail-image-label">CampusMart Listing</span>
                 <img src="<?php echo htmlspecialchars($product_image); ?>" alt="<?php echo htmlspecialchars($product['title']); ?>">
             </div>
 
             <div class="product-detail-info">
-                <h2><?php echo htmlspecialchars($product['title']); ?></h2>
-                <p class="product-detail-price">$<?php echo htmlspecialchars($product['price']); ?></p>
-                <p class="product-meta">Category: <?php echo htmlspecialchars($product['category_name']); ?></p>
-                <p class="product-meta">Seller: <?php echo htmlspecialchars($product['username']); ?></p>
-                <p class="product-meta">Posted on: <?php echo htmlspecialchars($product['created_at']); ?></p>
+                <div class="detail-heading-row">
+                    <span class="product-badge"><?php echo htmlspecialchars($categoryName); ?></span>
+                    <span class="product-status-pill">Active Listing</span>
+                </div>
 
-                <p class="product-detail-desc">
-                    <?php echo nl2br(htmlspecialchars($product['description'])); ?>
-                </p>
+                <h2><?php echo htmlspecialchars($product['title']); ?></h2>
+                <p class="product-detail-price">$<?php echo number_format((float)$product['price'], 2); ?></p>
+
+                <div class="seller-card">
+                    <div class="seller-avatar">S</div>
+                    <div class="seller-details">
+                        <span>Seller</span>
+                        <strong><?php echo htmlspecialchars($sellerName); ?></strong>
+                    </div>
+                </div>
+
+                <div class="product-facts">
+                    <div class="product-fact">
+                        <span>Category</span>
+                        <strong><?php echo htmlspecialchars($categoryName); ?></strong>
+                    </div>
+                    <div class="product-fact">
+                        <span>Posted</span>
+                        <strong><?php echo htmlspecialchars($postedDate); ?></strong>
+                    </div>
+                    <div class="product-fact">
+                        <span>Status</span>
+                        <strong>Available</strong>
+                    </div>
+                </div>
+
+                <div class="description-block">
+                    <h3>Item Description</h3>
+                    <p class="product-detail-desc">
+                        <?php echo nl2br(htmlspecialchars($product['description'])); ?>
+                    </p>
+                </div>
 
                 <div class="product-detail-actions">
                     <a href="products.php" class="btn btn-secondary">Back to Products</a>
