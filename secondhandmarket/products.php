@@ -85,7 +85,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="index.php" class="logo">CampusMart</a>
         <div class="nav-links">
             <a href="index.php">Home</a>
-            <a href="products.php">Products</a>
+            <a href="products.php" class="nav-current">Products</a>
             <a href="add_product.php">Sell Item</a>
             <a href="cart.php">Favorites</a>
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -140,38 +140,44 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </section>
 
 <!-- Products List -->
-<section class="container">
-    <h2 class="section-title">All Products</h2>
-    <p class="filter-summary">
-        <?php echo count($products); ?> product(s) found
-        <?php if ($selectedCategoryName !== ''): ?>
-            in <?php echo htmlspecialchars($selectedCategoryName); ?>
-        <?php endif; ?>
-        <?php if ($search !== ''): ?>
-            for "<?php echo htmlspecialchars($search); ?>"
-        <?php endif; ?>
-        <?php if ($activePriceRange !== null): ?>
-            in <?php echo htmlspecialchars($activePriceRange['label']); ?>
-        <?php endif; ?>
-    </p>
+<section class="container products-section">
+    <div class="products-heading">
+        <div>
+            <h2 class="section-title">All Products</h2>
+            <p class="filter-summary">
+                <?php echo count($products); ?> product(s) found
+                <?php if ($selectedCategoryName !== ''): ?>
+                    in <?php echo htmlspecialchars($selectedCategoryName); ?>
+                <?php endif; ?>
+                <?php if ($search !== ''): ?>
+                    for "<?php echo htmlspecialchars($search); ?>"
+                <?php endif; ?>
+                <?php if ($activePriceRange !== null): ?>
+                    in <?php echo htmlspecialchars($activePriceRange['label']); ?>
+                <?php endif; ?>
+            </p>
+        </div>
+    </div>
 
     <?php if (count($products) > 0): ?>
         <div class="product-grid">
             <?php foreach ($products as $product): ?>
-                <div class="product-card">
-                    <img
-                        src="<?php echo htmlspecialchars(!empty($product['image']) ? $product['image'] : 'assets/images/default-product.png'); ?>"
-                        alt="<?php echo htmlspecialchars($product['title']); ?>"
-                        class="product-image"
-                    >
+                <div class="product-card product-list-card">
+                    <div class="product-image-wrap">
+                        <img
+                            src="<?php echo htmlspecialchars(!empty($product['image']) ? $product['image'] : 'assets/images/default-product.png'); ?>"
+                            alt="<?php echo htmlspecialchars($product['title']); ?>"
+                            class="product-image"
+                        >
+                        <span class="product-badge"><?php echo htmlspecialchars($product['category_name']); ?></span>
+                    </div>
                     <div class="product-info">
                         <h3 class="product-title"><?php echo htmlspecialchars($product['title']); ?></h3>
-                        <p class="product-price">$<?php echo htmlspecialchars($product['price']); ?></p>
-                        <p class="product-meta">Category: <?php echo htmlspecialchars($product['category_name']); ?></p>
+                        <p class="product-price">$<?php echo number_format((float)$product['price'], 2); ?></p>
                         <p class="product-meta">Seller: <?php echo htmlspecialchars($product['username']); ?></p>
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
                         <div class="product-actions">
-                            <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="btn">View</a>
+                            <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="btn">View Details</a>
                             <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="btn btn-secondary">Save Item</a>
                         </div>
                     </div>
@@ -179,7 +185,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <p>No products found for the selected search conditions.</p>
+        <div class="empty-box">
+            <h3>No products found</h3>
+            <p>Try a different keyword, category, or price range.</p>
+            <div class="empty-box-actions">
+                <a href="products.php" class="btn">Clear filters</a>
+            </div>
+        </div>
     <?php endif; ?>
 </section>
 
