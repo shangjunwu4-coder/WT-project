@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'includes/dbconnect.php'; // 确保 $pdo 已经在这里初始化
+include 'includes/dbconnect.php'; 
 
 try {
     $stmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
@@ -29,7 +29,7 @@ foreach ($categories as $category) {
     }
 }
 
-// 查询数据库，关联分类和用户
+
 $sql = "SELECT products.*, categories.name AS category_name, users.username
         FROM products
         JOIN categories ON products.category_id = categories.id
